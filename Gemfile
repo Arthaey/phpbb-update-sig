@@ -4,3 +4,4 @@ gem "highline"
 gem "mechanize"
 
 gem "rspec"
+gem "simplecov"
