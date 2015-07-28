@@ -66,7 +66,8 @@ RSpec.describe BBCodeProgress do
     end
 
     it "rejects item with fractional max", :pending => true do
-      expect{BBCodeProgress.parse_args(["foo=1/4.2"])}.to raise_error("ERROR: Cannot use fractional max")
+      expect{ BBCodeProgress.parse_args(["foo=1/4.2"]) }
+          .to raise_error("ERROR: Cannot use fractional max")
     end
 
     it "rejects item with no value" do
@@ -115,6 +116,18 @@ RSpec.describe BBCodeProgress do
       expect_progress(items["foo"], "foo", 1, 42)
     end
 
+    it "ignores item with no max" do
+      sig = "[progress=foo]1[/progress]"
+      items = BBCodeProgress.parse_sig(sig)
+      expect(items.length).to eq(0)
+    end
+
+    it "ignores item with no value" do
+      sig = "[progress=foo]/42[/progress]"
+      items = BBCodeProgress.parse_sig(sig)
+      expect(items.length).to eq(0)
+    end
+
     it "parses multiple items" do
       sig = "[progress=foo]1/42[/progress] [progress=bar]2/37[/progress]"
       items = BBCodeProgress.parse_sig(sig)
@@ -125,15 +138,87 @@ RSpec.describe BBCodeProgress do
   end
 
   context "updates progress" do
-    it "replaces value", :pending => true
-    it "replaces max", :pending => true
-    it "replaces value and max", :pending => true
-    it "preserves leading part of signature", :pending => true
-    it "preserves trailing part of signature", :pending => true
-    it "preserves leading & trailing parts of signature", :pending => true
-    it "fails if max is absent", :pending => true
-    it "warns when an item is not updated", :pending => true
-    it "warns when an option does not match any items", :pending => true
-    it "matches items case-insensitively", :pending => true
+    before(:context) do
+      @original_stderr = $stderr
+      $stderr = File.open(File::NULL, "w")
+    end
+
+    before(:example) do
+      @old_sig = "[progress=foo]1/42[/progress] [progress=bar]2/37[/progress]"
+    end
+
+    after(:context) do
+      $stderr = @original_stderr
+    end
+
+    it "replaces value" do
+      new_sig = BBCodeProgress.update(@old_sig, ["foo=3"])
+      expect(new_sig).to eq("[progress=foo]3/42[/progress] [progress=bar]2/37[/progress]")
+    end
+
+    it "replaces max", :pending => true do
+      new_sig = BBCodeProgress.update(@old_sig, ["foo=/14"])
+      expect(new_sig).to eq("[progress=foo]1/14[/progress] [progress=bar]2/37[/progress]")
+    end
+
+    it "replaces value and max" do
+      new_sig = BBCodeProgress.update(@old_sig, ["foo=3/14"])
+      expect(new_sig).to eq("[progress=foo]3/14[/progress] [progress=bar]2/37[/progress]")
+    end
+
+    it "ignores unknown items" do
+      new_sig = BBCodeProgress.update(@old_sig, ["qux=7/9"])
+      expect(new_sig).to eq(@old_sig)
+    end
+
+    it "preserves leading part of signature" do
+      lead = "leading line\nleading words"
+      old_sig = "#{lead}#{@old_sig}"
+      new_sig = BBCodeProgress.update(old_sig, ["foo=3/14"])
+      expect(new_sig).to eq(
+        "#{lead}[progress=foo]3/14[/progress] [progress=bar]2/37[/progress]"
+      )
+    end
+
+    it "preserves trailing part of signature" do
+      trail = "trailing line\ntrailing words"
+      old_sig = "#{@old_sig}#{trail}"
+      new_sig = BBCodeProgress.update(old_sig, ["foo=3/14"])
+      expect(new_sig).to eq(
+        "[progress=foo]3/14[/progress] [progress=bar]2/37[/progress]#{trail}"
+      )
+    end
+
+    it "preserves leading & trailing parts of signature" do
+      lead = "leading line\nleading words"
+      trail = "trailing line\ntrailing words"
+      old_sig = "#{lead}#{@old_sig}#{trail}"
+      new_sig = BBCodeProgress.update(old_sig, ["foo=3/14"])
+      expect(new_sig).to eq(
+        "#{lead}[progress=foo]3/14[/progress] [progress=bar]2/37[/progress]#{trail}"
+      )
+    end
+
+    it "warns when an item is not updated" do
+      expect { BBCodeProgress.update(@old_sig, ["foo=3/14"]) }
+          .to output(/WARNING: did not update 'bar'/).to_stderr
+    end
+
+    it "warns when an option does not match any items" do
+      expect { BBCodeProgress.update(@old_sig, ["qux=7/9"]) }
+          .to output(/WARNING: no such item 'qux', will not create one/).to_stderr
+    end
+
+    it "matches items case-insensitively" do
+      new_sig = BBCodeProgress.update(@old_sig, ["FOO=3/14"])
+      expect(new_sig).to eq("[progress=foo]3/14[/progress] [progress=bar]2/37[/progress]")
+    end
+
+    it "fails if max is somehow (via a bug) absent" do
+      old_progress = { "foo" => BBCodeProgress.new("foo", 3, nil) }
+      args_progress = BBCodeProgress.parse_args(["foo=3/14"])
+      expect{ BBCodeProgress.update!(old_progress, args_progress) }
+          .to raise_error("ERROR: all old_progress items must have @max set")
+    end
   end
 end
