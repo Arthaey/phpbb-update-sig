@@ -1,3 +1,5 @@
+require "./amount.rb"
+
 class BBCodeProgress
 
   ARG_REGEX = %r{-{0,2}(\w+)=(\d+)?/?(\d+)?}
@@ -15,11 +17,11 @@ class BBCodeProgress
   end
 
   def value=(num)
-    @value = num.to_i unless num.nil?
+    set_variable(:@value, num)
   end
 
   def max=(num)
-    @max = num.to_i unless num.nil?
+    set_variable(:@max, num)
   end
 
   def to_s
@@ -40,6 +42,17 @@ class BBCodeProgress
   end
 
   private
+
+  def set_variable(variable, value)
+    return if value.nil?
+    case value
+      when Amount
+        instance_variable_set(variable, value)
+      when Fixnum, String
+        instance_variable_set(variable, Amount.new(value.to_i, :absolute))
+    end
+    puts "@value = #{@value.inspect}, @max = #{@max.inspect}" # XXX
+  end
 
   # Updates old_progress with new values from args_progress.
   def self.update!(old_progress, args_progress)
@@ -67,7 +80,6 @@ class BBCodeProgress
     old_progress
   end
 
-  # TODO: support +N values to make incrementing easier.
   # TODO: support 0.N => N values.
   # Returns an hash of BBCodeProgress items from command-line arguments.
   def self.parse_args(args)

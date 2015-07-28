@@ -102,10 +102,20 @@ RSpec.describe BBCodeProgress do
 
     it "parses item incrementing value", :pending => true
     it "parses item incrementing max", :pending => true
-    it "parses item incrementing value and max", :pending => true
+
+    it "parses item incrementing value and max" do
+      items = BBCodeProgress.parse_args(["foo=+1/+42"])
+      expect(items.length).to eq(1)
+      expect_progress(items["foo"], "foo", 1, 42)
+      pending
+    end
+
     it "parses item decrementing value", :pending => true
     it "parses item decrementing max", :pending => true
     it "parses item decrementing value and max", :pending => true
+
+    it "parses item decrementing value and incrementing max", :pending => true
+    it "parses item incrementing value and decrementing max", :pending => true
   end
 
   context "parsing signature" do
@@ -220,5 +230,21 @@ RSpec.describe BBCodeProgress do
       expect{ BBCodeProgress.update!(old_progress, args_progress) }
           .to raise_error("ERROR: all old_progress items must have @max set")
     end
+
+    it "increments value", :pending => true
+    it "increments max", :pending => true
+
+    it "increments value and max" do
+      new_sig = BBCodeProgress.update(@old_sig, ["foo=+1/+1"])
+      expect(new_sig).to eq("[progress=foo]2/43[/progress] [progress=bar]2/37[/progress]")
+      pending
+    end
+
+    it "decrements value", :pending => true
+    it "decrements max", :pending => true
+    it "decrements value and max", :pending => true
+
+    it "decrements value and increments max", :pending => true
+    it "increments value and decrements max", :pending => true
   end
 end
