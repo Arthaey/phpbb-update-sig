@@ -122,10 +122,11 @@ RSpec.describe BBCodeProgress do
       expect(items.length).to eq(0)
     end
 
-    it "ignores item with no value" do
+    it "ignores item with no value", :pending => true do
       sig = "[progress=foo]/42[/progress]"
       items = BBCodeProgress.parse_sig(sig)
       expect(items.length).to eq(0)
+      expect_progress(items["foo"], "foo", 1, 42)
     end
 
     it "parses multiple items" do
