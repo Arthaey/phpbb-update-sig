@@ -11,8 +11,7 @@ of compatibly-configured phpBB forum sites.
 # Script Requirements
 
 - Ruby
-- [highline](https://github.com/JEG2/highline/) gem
-- [mechanize](https://github.com/sparklemotion/mechanize) gem
+- gems in Gemfile
 
 # phpBB Forum Configuration
 
@@ -32,7 +31,8 @@ of compatibly-configured phpBB forum sites.
 
 # TODO
 
-- tests
+- implement tests
+- test CLI
 - support +N values to make incrementing easier
 - support 0.N => N values
 - get password from somewhere other than STDIN
