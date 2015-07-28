@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 require "highline/import"
-require "mechanize"
 require "optparse"
 require "./bbcode_progress.rb"
 require "./phpbb.rb"

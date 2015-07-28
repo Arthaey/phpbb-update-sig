@@ -1,4 +1,8 @@
+require "mechanize"
+
 class PhpBB
+
+  attr_reader :logged_in, :signature
 
   def initialize(base_url, username, password)
     @base_url = base_url
@@ -23,7 +27,7 @@ class PhpBB
     login_form.password = @password
     home_page = @agent.submit(login_form, login_form.button_with(:name => "login"))
     if home_page.form_with(:id => "login")
-      raise "Could not log in as user #{@username}"
+      raise "Could not log in as user '#{@username}'"
     end
     @logged_in = true
   end
