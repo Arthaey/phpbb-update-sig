@@ -4,27 +4,27 @@ require "./bbcode_progress.rb"
 RSpec.describe BBCodeProgress do
   context "creating new object" do
     it "sets label and value" do
-      p = BBCodeProgress.new("label", 1)
-      expect(p.label).to eq("label")
+      p = BBCodeProgress.new("foo", 1)
+      expect(p.label).to eq("foo")
       expect(p.value).to eq(1)
       expect(p.max).to be_nil
     end
 
     it "sets label, value, and max" do
-      p = BBCodeProgress.new("label", 1, 42)
-      expect(p.label).to eq("label")
+      p = BBCodeProgress.new("foo", 1, 42)
+      expect(p.label).to eq("foo")
       expect(p.value).to eq(1)
       expect(p.max).to eq(42)
     end
 
     it "generates BBCode" do
-      p = BBCodeProgress.new("label", 1, 42)
-      expect(p.to_s).to eq("[progress=label]1/42[/progress]")
+      p = BBCodeProgress.new("foo", 1, 42)
+      expect(p.to_s).to eq("[progress=foo]1/42[/progress]")
     end
 
     it "fails if max is absent before calling to_s" do
-      p = BBCodeProgress.new("label", 1)
-      expect{p.to_s}.to raise_error("ERROR[label]: must set @max before calling to_s")
+      p = BBCodeProgress.new("foo", 1)
+      expect{p.to_s}.to raise_error("ERROR[foo]: must set @max before calling to_s")
     end
   end
 
@@ -49,13 +49,13 @@ RSpec.describe BBCodeProgress do
 
   context "parsing signature" do
     it "parses item with value and max" do
-      sig = "[progress=label]1/42[/progress]"
+      sig = "[progress=foo]1/42[/progress]"
       items = BBCodeProgress.parse_sig(sig)
       expect(items.length).to eq(1)
-      expect(items.keys[0]).to eq("label")
+      expect(items.keys[0]).to eq("foo")
 
-      p = items["label"]
-      expect(p.label).to eq("label")
+      p = items["foo"]
+      expect(p.label).to eq("foo")
       expect(p.value).to eq(1)
       expect(p.max).to eq(42)
     end
