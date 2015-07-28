@@ -1,5 +1,7 @@
 class Amount
 
+  NUMBER_REGEX = %r{([+-]?)((?:\d*\.)?\d+)}
+
   TYPES = {
     :decrement => -1,
     :absolute  =>  0,
@@ -34,7 +36,7 @@ class Amount
     case other
       when Amount
         @quantity == other.quantity && @type == other.type
-      when Fixnum
+      when Fixnum, Float
         @quantity == other && @type == :absolute
       when String
         self == Amount.parse_string(other)
@@ -53,8 +55,8 @@ class Amount
   end
 
   def self.parse_string(input)
-    if input =~ /([+-]?)(\d+)/
-      quantity = $2.to_i
+    if input =~ NUMBER_REGEX
+      quantity = $2.to_f
       case $1
         when "-"
           return Amount.new(quantity, :decrement)

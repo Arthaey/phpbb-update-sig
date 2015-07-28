@@ -58,21 +58,38 @@ RSpec.describe BBCodeProgress do
       expect_progress(items["foo"], "foo", 1, 42)
     end
 
-    it "parses item with fractional value", :pending => true do
+    it "parses item with fractional value" do
       items = BBCodeProgress.parse_args(["foo=.1"])
       expect(items.length).to eq(1)
       expect_progress(items["foo"], "foo", 0.1, nil)
     end
 
-    it "parses item with fractional value and int max", :pending => true do
+    it "parses item with fractional value with leading zero" do
+      items = BBCodeProgress.parse_args(["foo=0.1"])
+      expect(items.length).to eq(1)
+      expect_progress(items["foo"], "foo", 0.1, nil)
+    end
+
+    it "parses item with fractional value and int max" do
       items = BBCodeProgress.parse_args(["foo=.1/42"])
       expect(items.length).to eq(1)
       expect_progress(items["foo"], "foo", 0.1, 42)
     end
 
-    it "rejects item with fractional max", :pending => true do
+    it "parses item with fractional value with leading zero and int max" do
+      items = BBCodeProgress.parse_args(["foo=0.1/42"])
+      expect(items.length).to eq(1)
+      expect_progress(items["foo"], "foo", 0.1, 42)
+    end
+
+    it "rejects item with fractional max" do
       expect{ BBCodeProgress.parse_args(["foo=1/4.2"]) }
-          .to raise_error("ERROR: Cannot use fractional max")
+          .to raise_error("ERROR: Max must be an integer")
+    end
+
+    it "parses item with fractional value and max" do
+      expect{ BBCodeProgress.parse_args(["foo=.1/4.2"]) }
+          .to raise_error("ERROR: Max must be an integer")
     end
 
     it "rejects item with no value" do
@@ -186,9 +203,14 @@ RSpec.describe BBCodeProgress do
       expect(new_sig).to eq("[progress=foo]3/14[/progress] [progress=bar]2/37[/progress]")
     end
 
-    it "ignores unknown items" do
-      new_sig = BBCodeProgress.update(@old_sig, ["qux=7/9"])
-      expect(new_sig).to eq(@old_sig)
+    it "handles update with fractional value" do
+      new_sig = BBCodeProgress.update(@old_sig, ["foo=.3"])
+      expect(new_sig).to eq("[progress=foo]30/4200[/progress] [progress=bar]2/37[/progress]")
+    end
+
+    it "handles update with fractional value and int max" do
+      new_sig = BBCodeProgress.update(@old_sig, ["foo=.3/14"])
+      expect(new_sig).to eq("[progress=foo]30/1400[/progress] [progress=bar]2/37[/progress]")
     end
 
     it "preserves leading part of signature" do
@@ -217,6 +239,11 @@ RSpec.describe BBCodeProgress do
       expect(new_sig).to eq(
         "#{lead}[progress=foo]3/14[/progress] [progress=bar]2/37[/progress]#{trail}"
       )
+    end
+
+    it "ignores unknown items" do
+      new_sig = BBCodeProgress.update(@old_sig, ["qux=7/9"])
+      expect(new_sig).to eq(@old_sig)
     end
 
     it "warns when an item is not updated" do

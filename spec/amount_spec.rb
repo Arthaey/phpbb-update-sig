@@ -43,6 +43,11 @@ RSpec.describe Amount do
       expect_amount(a, 42, :increment)
     end
 
+    it "parses fractional numbers" do
+      a = Amount.parse_string("4.2")
+      expect_amount(a, 4.2, :absolute)
+    end
+
     it "rejects malformed strings" do
       expect(Amount.parse_string("NaN")).to be_nil
     end

@@ -6,7 +6,7 @@ of compatibly-configured phpBB forum sites.
 # Usage
 
     sig-updater --username=USERNAME --site=http://www.example.com/phpbb/ \
-        --foo=3 --bar=2/10
+        --foo=3 --bar=2/10 --qux=+1 --thing=/+10 --other=-2
 
 # Script Requirements
 
@@ -31,8 +31,6 @@ of compatibly-configured phpBB forum sites.
 
 # TODO
 
-- implement tests
+- test phpbb class
 - test CLI
-- support +N values to make incrementing easier
-- support 0.N => N values
 - get password from somewhere other than STDIN

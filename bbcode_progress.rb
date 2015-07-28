@@ -2,7 +2,7 @@ require "./amount.rb"
 
 class BBCodeProgress
 
-  ARG_REGEX = %r{-{0,2}(\w+)=([+-]?\d+)?/?([+-]?\d+)?}
+  ARG_REGEX = %r{-{0,2}(\w+)=(#{Amount::NUMBER_REGEX})?/?(#{Amount::NUMBER_REGEX})?}
 
   PROGRESS_REGEX = %r{\[progress=(\w+)\](\d+)/(\d+)\[/progress\]}
 
@@ -22,13 +22,23 @@ class BBCodeProgress
 
   def max=(amount)
     set_variable(:@max, amount)
+    raise "ERROR: Max must be an integer" if @max && @max.quantity % 1 != 0
   end
 
   def to_s
     if @max.nil?
       raise "ERROR[#{@label}]: must set @max before calling to_s"
     end
-    "[progress=#{@label}]#{@value}/#{@max}[/progress]"
+
+    # Scale value and max up to be integers with the same ratio, if needed.
+    value = @value.quantity
+    max = @max.quantity
+    if @value.quantity % 1 != 0
+      value *= 100
+      max *= 100
+    end
+
+    "[progress=#{@label}]#{value.round}/#{max.round}[/progress]"
   end
 
   def self.update(old_sig, args)
@@ -81,10 +91,10 @@ class BBCodeProgress
     old_progress
   end
 
-  # TODO: support 0.N => N values.
   # Returns an hash of BBCodeProgress items from command-line arguments.
   def self.parse_args(args)
-    self.construct_hash(args.join(" ").scan(ARG_REGEX))
+    matches = args.join(" ").scan(ARG_REGEX)
+    self.construct_hash(matches.map { |data| [data[0], data[1], data[4]] })
   end
 
   # Returns an hash of BBCodeProgress items from a BBCode signature.
@@ -95,9 +105,9 @@ class BBCodeProgress
   def self.construct_hash(array_of_data)
     items = {}
     array_of_data.each do |data|
-      # label is required; at least one of value or max is required
-      if data[0] && (data[1] || data[2])
-        p = BBCodeProgress.new(*data)
+      label, value, max = *data
+      if label && (value || max)
+        p = BBCodeProgress.new(label, value, max)
         items[p.label.downcase] = p
       end
     end
