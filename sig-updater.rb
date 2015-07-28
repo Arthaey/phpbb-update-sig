@@ -6,7 +6,8 @@ require "./bbcode_progress.rb"
 require "./phpbb.rb"
 
 options = {}
-OptionParser.new do |opts|
+
+option_parser = OptionParser.new do |opts|
   opts.banner = "USAGE: #{$0} --username=USERNAME --site=URL --label=value[/max] ..."
 
   opts.on("-s", "--site=URL", "phpBB forum website URL") do |arg|
@@ -17,8 +18,14 @@ OptionParser.new do |opts|
   opts.on("-u", "--username=USERNAME", "phpBB forum username") do |arg|
     options[:username] = arg
   end
+end
 
-end.parse!
+# Keep any unknown options; these will be the progress items.
+begin
+  option_parser.parse!
+rescue OptionParser::InvalidOption => e
+  e.recover ARGV
+end
 
 raise "Username is required" if options[:username].nil?
 raise "Site URL is required" if options[:site].nil?
