@@ -30,6 +30,7 @@ end
 raise "Username is required" if options[:username].nil?
 raise "Site URL is required" if options[:site].nil?
 
+# TODO: save password somewhere (and make sure .gitignore ignores it).
 password = ask("Password for #{options[:username]}: ") { |q| q.echo = false }
 raise "Password required for user '#{options[:username]}'" if password.nil?
 

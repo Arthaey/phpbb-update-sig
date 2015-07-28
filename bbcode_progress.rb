@@ -62,6 +62,8 @@ class BBCodeProgress
     old_progress
   end
 
+  # TODO: support +N values to make incrementing easier.
+  # TODO: support 0.N => N values.
   # Returns an hash of BBCodeProgress items from command-line arguments.
   def self.parse_args(args)
     self.construct_hash(args.join(" ").scan(ARG_REGEX))
