@@ -23,6 +23,11 @@ RSpec.describe BBCodeProgress do
       expect_progress(p, "foo", 1, 42)
     end
 
+    it "accepts Amount objects" do
+      p = BBCodeProgress.new("foo", Amount.parse_string("1"))
+      expect_progress(p, "foo", 1, nil)
+    end
+
     it "generates BBCode" do
       p = BBCodeProgress.new("foo", 1, 42)
       expect(p.to_s).to eq("[progress=foo]1/42[/progress]")
