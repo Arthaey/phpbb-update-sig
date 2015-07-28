@@ -100,30 +100,27 @@ RSpec.describe BBCodeProgress do
       expect_progress(items["foo"], "foo", 1, nil)
     end
 
-    it "parses item incrementing value" do
-      items = BBCodeProgress.parse_args(["foo=+1"])
-      expect(items.length).to eq(1)
-      expect_progress(items["foo"], "foo", "+1", nil)
+    it "parses item incrementing and/or decrementing" do
+      values = [ nil, "+1", "2", "-3" ]
+      maxes  = [ nil, "+2", "5", "-6" ]
+
+      values.each do |value|
+        maxes.each do |max|
+          # Don't test when BOTH are nil; that case is handled elsewhere.
+          next if value.nil? and max.nil?
+
+          arg = "foo="
+          arg += value unless value.nil?
+          arg += "/" if max
+          arg += max unless max.nil?
+
+          items = BBCodeProgress.parse_args([arg])
+          expect(items.length).to eq(1)
+          expect_progress(items["foo"], "foo", value, max)
+        end
+      end
     end
 
-    it "parses item incrementing max" do
-      items = BBCodeProgress.parse_args(["foo=/+42"])
-      expect(items.length).to eq(1)
-      expect_progress(items["foo"], "foo", nil, "+42")
-    end
-
-    it "parses item incrementing value and max" do
-      items = BBCodeProgress.parse_args(["foo=+1/+42"])
-      expect(items.length).to eq(1)
-      expect_progress(items["foo"], "foo", "+1", "+42")
-    end
-
-    it "parses item decrementing value", :pending => true
-    it "parses item decrementing max", :pending => true
-    it "parses item decrementing value and max", :pending => true
-
-    it "parses item decrementing value and incrementing max", :pending => true
-    it "parses item incrementing value and decrementing max", :pending => true
   end
 
   context "parsing signature" do
@@ -239,20 +236,31 @@ RSpec.describe BBCodeProgress do
           .to raise_error("ERROR: all old_progress items must have @max set")
     end
 
-    it "increments value", :pending => true
-    it "increments max", :pending => true
+    it "increments and/or decrements" do
+      arg_values      = [ nil, "+1", "2", "-1" ]
+      expected_values = [ nil,   2,   2,    0  ]
+      arg_maxes       = [ nil, "+4", "5", "-6" ]
+      expected_maxes  = [ nil,  46,   5,   36  ]
 
-    it "increments value and max" do
-      new_sig = BBCodeProgress.update(@old_sig, ["foo=+1/+1"])
-      expect(new_sig).to eq("[progress=foo]2/43[/progress] [progress=bar]2/37[/progress]")
-      pending
+      arg_values.each_with_index do |value, v_ndx|
+        arg_maxes.each_with_index do |max, m_ndx|
+          # Don't test when BOTH are nil; that case is handled elsewhere.
+          next if value.nil? and max.nil?
+
+          arg = "foo="
+          arg += value unless value.nil?
+          arg += "/" if max
+          arg += max unless max.nil?
+
+          expected = "#{expected_values[v_ndx] || 1}/#{expected_maxes[m_ndx] || 42}"
+
+          new_sig = BBCodeProgress.update(@old_sig, [arg])
+          expect(new_sig).to eq(
+            "[progress=foo]#{expected}[/progress] [progress=bar]2/37[/progress]"
+          )
+        end
+      end
     end
 
-    it "decrements value", :pending => true
-    it "decrements max", :pending => true
-    it "decrements value and max", :pending => true
-
-    it "decrements value and increments max", :pending => true
-    it "increments value and decrements max", :pending => true
   end
 end
