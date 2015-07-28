@@ -4,12 +4,20 @@ class BBCodeProgress
   PROGRESS_REGEX = %r{\[progress=(\w+)\](\d+)/(\d+)\[/progress\]}
   SIG_REGEX = %r{(?:#{PROGRESS_REGEX} *)+}
 
-  attr_accessor :label, :value, :max
+  attr_reader :label, :value, :max
 
   def initialize(label, value, max = nil)
     @label = label
-    @value = value
-    @max = max
+    self.value = value
+    self.max = max
+  end
+
+  def value=(num)
+    @value = num.to_i
+  end
+
+  def max=(num)
+    @max = num.to_i unless num.nil?
   end
 
   def to_s

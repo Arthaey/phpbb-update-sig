@@ -32,11 +32,12 @@ RSpec.describe BBCodeProgress do
   context "parsing command-line arguments" do
     it "parses item with leading --", :pending => true
     it "parses item without leading --", :pending => true
-    it "rejects item with no value", :pending => true
     it "parses item with value", :pending => true
     it "parses item with max", :pending => true
     it "parses item with value and max", :pending => true
     it "parses item with fractional value", :pending => true
+    it "rejects item with no value", :pending => true
+    it "parses item with value greater than max", :pending => true
     it "parses item incrementing value", :pending => true
     it "parses item incrementing max", :pending => true
     it "parses item incrementing value and max", :pending => true
@@ -47,8 +48,25 @@ RSpec.describe BBCodeProgress do
   end
 
   context "parsing signature" do
-    it "parses item with value and max", :pending => true
-    it "parses multiple items", :pending => true
+    it "parses item with value and max" do
+      sig = "[progress=label]1/42[/progress]"
+      items = BBCodeProgress.parse_sig(sig)
+      expect(items.length).to eq(1)
+      expect(items.keys[0]).to eq("label")
+
+      p = items["label"]
+      expect(p.label).to eq("label")
+      expect(p.value).to eq(1)
+      expect(p.max).to eq(42)
+    end
+
+    it "parses multiple items" do
+      sig = "[progress=foo]1/42[/progress] [progress=bar]2/37[/progress]"
+      items = BBCodeProgress.parse_sig(sig)
+      expect(items.length).to eq(2)
+      expect(items.keys[0]).to eq("foo")
+      expect(items.keys[1]).to eq("bar")
+    end
   end
 
   context "updates progress" do
