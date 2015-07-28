@@ -1,6 +1,6 @@
 class BBCodeProgress
 
-  ARG_REGEX = %r{--(\w+)=(\d+)(?:/(\d+))?}
+  ARG_REGEX = %r{-{0,2}(\w+)=(\d+)(?:/(\d+))?}
   PROGRESS_REGEX = %r{\[progress=(\w+)\](\d+)/(\d+)\[/progress\]}
   SIG_REGEX = %r{(?:#{PROGRESS_REGEX} *)+}
 
