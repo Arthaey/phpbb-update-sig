@@ -53,7 +53,6 @@ class BBCodeProgress
       when String
         instance_variable_set(variable, Amount.parse_string(amount))
     end
-    puts "@value = #{@value.inspect}, @max = #{@max.inspect}" # XXX
   end
 
   # Updates old_progress with new values from args_progress.
