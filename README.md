@@ -32,7 +32,6 @@ of compatibly-configured phpBB forum sites.
 
 # TODO
 
-- Gemfile
 - tests
 - support +N values to make incrementing easier
 - support 0.N => N values
