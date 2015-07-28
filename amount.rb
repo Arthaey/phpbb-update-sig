@@ -17,7 +17,7 @@ class Amount
     @type = type
   end
 
-  def update(amount)
+  def update!(amount)
     return self if amount.nil?
 
     case amount.type

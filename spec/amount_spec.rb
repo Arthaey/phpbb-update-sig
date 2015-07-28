@@ -50,9 +50,20 @@ RSpec.describe Amount do
   end
 
   context "to_s" do
-    it "prepends - to decrement amounts", :pending => true
-    it "prepends nothing to absolute amounts", :pending => true
-    it "prepends + to increment amounts", :pending => true
+    it "prepends - to decrement amounts" do
+      a = Amount.new(42, :decrement)
+      expect(a.to_s).to eq("-42")
+    end
+
+    it "prepends nothing to absolute amounts" do
+      a = Amount.new(42, :absolute)
+      expect(a.to_s).to eq("42")
+    end
+
+    it "prepends + to increment amounts" do
+      a = Amount.new(42, :increment)
+      expect(a.to_s).to eq("+42")
+    end
   end
 
   context "equality" do
@@ -68,10 +79,28 @@ RSpec.describe Amount do
   end
 
   context "updating based on another Amount" do
-    it "decrements quantity", :pending => true
-    it "sets quantity", :pending => true
-    it "increments quantity", :pending => true
-    it "does nothing if other Amount is nil", :pending => true
-    it "does nothing if quantity is zero", :pending => true
+    before(:example) do
+      @a = Amount.new(42, :absolute)
+    end
+
+    it "decrements quantity" do
+      @a.update!(Amount.parse_string("-1"))
+      expect_amount(@a, 41, :absolute)
+    end
+
+    it "sets quantity" do
+      @a.update!(Amount.parse_string("37"))
+      expect_amount(@a, 37, :absolute)
+    end
+
+    it "increments quantity" do
+      @a.update!(Amount.parse_string("+1"))
+      expect_amount(@a, 43, :absolute)
+    end
+
+    it "does nothing if other Amount is nil" do
+      @a.update!(nil)
+      expect_amount(@a, 42, :absolute)
+    end
   end
 end

@@ -66,8 +66,8 @@ class BBCodeProgress
 
     args_progress.each do |label, p|
       if old_p = old_progress[label]
-        old_p.value.update(p.value)
-        old_p.max.update(p.max)
+        old_p.value.update!(p.value)
+        old_p.max.update!(p.max)
         not_updated.delete(label)
       else
         $stderr.puts "WARNING: no such item '#{label}', will not create one"
