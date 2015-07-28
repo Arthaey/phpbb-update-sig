@@ -67,15 +67,37 @@ RSpec.describe Amount do
   end
 
   context "equality" do
-    it "Amount with same quantity and type is equal", :pending => true
-    it "Amount with same quantity but different type is not equal", :pending => true
-    it "Amount with same type but different quantity is not equal", :pending => true
-    it "number with same quantity and type is equal", :pending => true
-    it "number with same quantity but different type is not equal", :pending => true
-    it "number with same type but different quantity is not equal", :pending => true
-    it "string with same quantity and type is equal", :pending => true
-    it "string with same quantity but different type is not equal", :pending => true
-    it "string with same type but different quantity is not equal", :pending => true
+    it "compares equality with another Amount object" do
+      a = Amount.new(42, :absolute)
+      expect(a).to eq(Amount.new(42, :absolute))
+      expect(a).not_to eq(Amount.new(42, :decrement))
+      expect(a).not_to eq(Amount.new(42, :increment))
+      expect(a).not_to eq(Amount.new(37, :decrement))
+      expect(a).not_to eq(Amount.new(37, :absolute))
+      expect(a).not_to eq(Amount.new(37, :increment))
+    end
+
+    it "compares equality with a number" do
+      a = Amount.new(42, :absolute)
+      expect(a).to eq(42)
+      expect(a).not_to eq(37)
+
+      b = Amount.new(42, :decrement)
+      expect(b).not_to eq(42)
+
+      c = Amount.new(42, :increment)
+      expect(c).not_to eq(42)
+    end
+
+    it "compares equality with a string" do
+      a = Amount.new(42, :absolute)
+      expect(a).to eq("42")
+      expect(a).not_to eq("-42")
+      expect(a).not_to eq("+42")
+      expect(a).not_to eq("-37")
+      expect(a).not_to eq("37")
+      expect(a).not_to eq("+37")
+    end
   end
 
   context "updating based on another Amount" do
