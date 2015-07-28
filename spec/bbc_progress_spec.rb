@@ -3,10 +3,31 @@ require "./bbcode_progress.rb"
 
 RSpec.describe BBCodeProgress do
   context "creating new object" do
-    it "sets label and value", :pending => true
-    it "sets label, value, and max", :pending => true
-    it "fails if max is absent before calling to_s", :pending => true
+    it "sets label and value" do
+      p = BBCodeProgress.new("label", 1)
+      expect(p.label).to eq("label")
+      expect(p.value).to eq(1)
+      expect(p.max).to be_nil
+    end
+
+    it "sets label, value, and max" do
+      p = BBCodeProgress.new("label", 1, 42)
+      expect(p.label).to eq("label")
+      expect(p.value).to eq(1)
+      expect(p.max).to eq(42)
+    end
+
+    it "generates BBCode" do
+      p = BBCodeProgress.new("label", 1, 42)
+      expect(p.to_s).to eq("[progress=label]1/42[/progress]")
+    end
+
+    it "fails if max is absent before calling to_s" do
+      p = BBCodeProgress.new("label", 1)
+      expect{p.to_s}.to raise_error("ERROR[label]: must set @max before calling to_s")
+    end
   end
+
 
   context "parsing command-line arguments" do
     it "parses item with leading --", :pending => true

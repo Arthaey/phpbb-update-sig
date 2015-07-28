@@ -1,8 +1,5 @@
 class BBCodeProgress
 
-  ERR_MISSING_MAX_TO_S = 1
-  ERR_MISSING_MAX_SET_MAXES = 2
-
   ARG_REGEX = %r{--(\w+)=(\d+)(?:/(\d+))?}
   PROGRESS_REGEX = %r{\[progress=(\w+)\](\d+)/(\d+)\[/progress\]}
   SIG_REGEX = %r{(?:#{PROGRESS_REGEX} *)+}
@@ -17,8 +14,7 @@ class BBCodeProgress
 
   def to_s
     if @max.nil?
-      $stderr.puts "ERROR[#{@label}]: must set @max before calling to_s"
-      exit ERR_MISSING_MAX_TO_S
+      raise "ERROR[#{@label}]: must set @max before calling to_s"
     end
     "[progress=#{@label}]#{@value}/#{@max}[/progress]"
   end
@@ -38,9 +34,8 @@ class BBCodeProgress
   # Updates old_progress with new values from args_progress.
   def self.update!(old_progress, args_progress)
     if old_progress.any? { |label, p| p.max.nil? }
-      $stderr.puts "ERROR: all old_progress items must have @max set"
       $stderr.puts old_progress.inspect
-      exit ERR_MISSING_MAX_SET_MAXES
+      raise "ERROR: all old_progress items must have @max set"
     end
 
     not_updated = old_progress.map { |label, p| label }
