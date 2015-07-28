@@ -1,7 +1,9 @@
 class BBCodeProgress
 
-  ARG_REGEX = %r{-{0,2}(\w+)=(\d+)(?:/(\d+))?}
+  ARG_REGEX = %r{-{0,2}(\w+)=(\d+)?/?(\d+)?}
+
   PROGRESS_REGEX = %r{\[progress=(\w+)\](\d+)/(\d+)\[/progress\]}
+
   SIG_REGEX = %r{(?:#{PROGRESS_REGEX} *)+}
 
   attr_reader :label, :value, :max
@@ -13,7 +15,7 @@ class BBCodeProgress
   end
 
   def value=(num)
-    @value = num.to_i
+    @value = num.to_i unless num.nil?
   end
 
   def max=(num)
@@ -80,8 +82,11 @@ class BBCodeProgress
   def self.construct_hash(array_of_data)
     items = {}
     array_of_data.each do |data|
-      p = BBCodeProgress.new(*data)
-      items[p.label.downcase] = p
+      # label is required; at least one of value or max is required
+      if data[0] && (data[1] || data[2])
+        p = BBCodeProgress.new(*data)
+        items[p.label.downcase] = p
+      end
     end
     items
   end

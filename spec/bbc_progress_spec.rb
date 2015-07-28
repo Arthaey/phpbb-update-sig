@@ -41,7 +41,7 @@ RSpec.describe BBCodeProgress do
       expect_progress(items["foo"], "foo", 1, nil)
     end
 
-    it "parses item with max", :pending => true do
+    it "parses item with max" do
       items = BBCodeProgress.parse_args(["foo=/42"])
       expect(items.length).to eq(1)
       expect_progress(items["foo"], "foo", nil, 42)
@@ -122,11 +122,10 @@ RSpec.describe BBCodeProgress do
       expect(items.length).to eq(0)
     end
 
-    it "ignores item with no value", :pending => true do
+    it "ignores item with no value" do
       sig = "[progress=foo]/42[/progress]"
       items = BBCodeProgress.parse_sig(sig)
       expect(items.length).to eq(0)
-      expect_progress(items["foo"], "foo", 1, 42)
     end
 
     it "parses multiple items" do
@@ -157,7 +156,7 @@ RSpec.describe BBCodeProgress do
       expect(new_sig).to eq("[progress=foo]3/42[/progress] [progress=bar]2/37[/progress]")
     end
 
-    it "replaces max", :pending => true do
+    it "replaces max" do
       new_sig = BBCodeProgress.update(@old_sig, ["foo=/14"])
       expect(new_sig).to eq("[progress=foo]1/14[/progress] [progress=bar]2/37[/progress]")
     end
