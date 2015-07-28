@@ -8,6 +8,9 @@ of compatibly-configured phpBB forum sites.
     sig-updater --username=USERNAME --site=http://www.example.com/phpbb/ \
         --foo=3 --bar=2/10 --qux=+1 --thing=/+10 --other=-2
 
+Username and password can also be stored in the environment variables
+`PHPBB_UPDATE_SIG_USERNAME` and `PHPBB_UPDATE_SIG_PASSWORD`.
+
 # Script Requirements
 
 - Ruby

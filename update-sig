@@ -26,14 +26,15 @@ rescue OptionParser::InvalidOption => e
   e.recover ARGV
 end
 
-raise "Username is required" if options[:username].nil?
+username = options[:username] || ENV["PHPBB_UPDATE_SIG_USERNAME"]
+
+raise "Username is required" if username.nil?
 raise "Site URL is required" if options[:site].nil?
 
-# TODO: save password somewhere (and make sure .gitignore ignores it).
-password = ask("Password for #{options[:username]}: ") { |q| q.echo = false }
-raise "Password required for user '#{options[:username]}'" if password.nil?
+password = ENV["PHPBB_UPDATE_SIG_PASSWORD"] || ask("Password for #{username}: ") { |q| q.echo = false }
+raise "Password required for user '#{username}'" if password.nil?
 
-forum = PhpBB.new(options[:site], options[:username], password)
+forum = PhpBB.new(options[:site], username, password)
 old_sig = forum.signature
 new_sig = BBCodeProgress.update(old_sig, ARGV)
 
