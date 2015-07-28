@@ -10,7 +10,9 @@ class Amount
 
   def initialize(quantity, type)
     raise "Quantity must not be nil" if quantity.nil?
-    raise "Type #{type} is not one of #{TYPES}" unless TYPES.has_key?(type)
+    raise "Quantity must not be negative" if quantity < 0
+    raise "Type #{type} is not one of #{TYPES.keys}" unless TYPES.has_key?(type)
+
     @quantity = quantity
     @type = type
   end
