@@ -15,6 +15,19 @@ class Amount
     @type = type
   end
 
+  def update(amount)
+    return self if amount.nil?
+
+    case amount.type
+      when :decrement
+        @quantity -= amount.quantity
+      when :absolute
+        @quantity = amount.quantity
+      when :increment
+        @quantity += amount.quantity
+    end
+  end
+
   def ==(other)
     case other
       when Amount
