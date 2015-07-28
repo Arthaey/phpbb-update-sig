@@ -2,7 +2,7 @@ require "./amount.rb"
 
 class BBCodeProgress
 
-  ARG_REGEX = %r{-{0,2}(\w+)=(\d+)?/?(\d+)?}
+  ARG_REGEX = %r{-{0,2}(\w+)=([+-]?\d+)?/?([+-]?\d+)?}
 
   PROGRESS_REGEX = %r{\[progress=(\w+)\](\d+)/(\d+)\[/progress\]}
 
@@ -16,12 +16,12 @@ class BBCodeProgress
     self.max = max
   end
 
-  def value=(num)
-    set_variable(:@value, num)
+  def value=(amount)
+    set_variable(:@value, amount)
   end
 
-  def max=(num)
-    set_variable(:@max, num)
+  def max=(amount)
+    set_variable(:@max, amount)
   end
 
   def to_s
@@ -43,13 +43,15 @@ class BBCodeProgress
 
   private
 
-  def set_variable(variable, value)
-    return if value.nil?
-    case value
+  def set_variable(variable, amount)
+    return if amount.nil?
+    case amount
       when Amount
-        instance_variable_set(variable, value)
-      when Fixnum, String
-        instance_variable_set(variable, Amount.new(value.to_i, :absolute))
+        instance_variable_set(variable, amount)
+      when Fixnum
+        instance_variable_set(variable, Amount.new(amount, :absolute))
+      when String
+        instance_variable_set(variable, Amount.parse_string(amount))
     end
     puts "@value = #{@value.inspect}, @max = #{@max.inspect}" # XXX
   end

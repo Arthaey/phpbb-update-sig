@@ -100,14 +100,22 @@ RSpec.describe BBCodeProgress do
       expect_progress(items["foo"], "foo", 1, nil)
     end
 
-    it "parses item incrementing value", :pending => true
-    it "parses item incrementing max", :pending => true
+    it "parses item incrementing value" do
+      items = BBCodeProgress.parse_args(["foo=+1"])
+      expect(items.length).to eq(1)
+      expect_progress(items["foo"], "foo", "+1", nil)
+    end
+
+    it "parses item incrementing max" do
+      items = BBCodeProgress.parse_args(["foo=/+42"])
+      expect(items.length).to eq(1)
+      expect_progress(items["foo"], "foo", nil, "+42")
+    end
 
     it "parses item incrementing value and max" do
       items = BBCodeProgress.parse_args(["foo=+1/+42"])
       expect(items.length).to eq(1)
-      expect_progress(items["foo"], "foo", 1, 42)
-      pending
+      expect_progress(items["foo"], "foo", "+1", "+42")
     end
 
     it "parses item decrementing value", :pending => true

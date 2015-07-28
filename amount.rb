@@ -21,6 +21,8 @@ class Amount
         @quantity == other.quantity && @type == other.type
       when Fixnum
         @quantity == other && @type == :absolute
+      when String
+        self == Amount.parse_string(other)
     end
   end
 
@@ -33,5 +35,20 @@ class Amount
       when :increment
         "+#{@quantity}"
     end
+  end
+
+  def self.parse_string(input)
+    if input =~ /([+-]?)(\d+)/
+      quantity = $2.to_i
+      case $1
+        when "-"
+          return Amount.new(quantity, :decrement)
+        when ""
+          return Amount.new(quantity, :absolute)
+        when "+"
+          return Amount.new(quantity, :increment)
+      end
+    end
+    return nil
   end
 end
