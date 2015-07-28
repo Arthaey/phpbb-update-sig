@@ -2,19 +2,25 @@ require "spec_helper"
 require "./bbcode_progress.rb"
 
 RSpec.describe BBCodeProgress do
+  def expect_progress(p, label, value, max)
+    expect(p.label).to eq(label)
+    expect(p.value).to eq(value)
+    if max.nil?
+      expect(p.max).to be_nil
+    else
+      expect(p.max).to eq(max)
+    end
+  end
+
   context "creating new object" do
     it "sets label and value" do
       p = BBCodeProgress.new("foo", 1)
-      expect(p.label).to eq("foo")
-      expect(p.value).to eq(1)
-      expect(p.max).to be_nil
+      expect_progress(p, "foo", 1, nil)
     end
 
     it "sets label, value, and max" do
       p = BBCodeProgress.new("foo", 1, 42)
-      expect(p.label).to eq("foo")
-      expect(p.value).to eq(1)
-      expect(p.max).to eq(42)
+      expect_progress(p, "foo", 1, 42)
     end
 
     it "generates BBCode" do
@@ -55,9 +61,7 @@ RSpec.describe BBCodeProgress do
       expect(items.keys[0]).to eq("foo")
 
       p = items["foo"]
-      expect(p.label).to eq("foo")
-      expect(p.value).to eq(1)
-      expect(p.max).to eq(42)
+      expect_progress(p, "foo", 1, 42)
     end
 
     it "parses multiple items" do
