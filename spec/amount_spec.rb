@@ -16,7 +16,7 @@ RSpec.describe Amount do
     end
 
     it "fails for negative quantity" do
-      expect{ Amount.new(-1, :decrement) }.to raise_error("Quantity must not be negative")
+      expect{ Amount.new(-42, :decrement) }.to raise_error("Quantity must not be negative")
     end
 
     it "fails for absent quantity" do
@@ -25,22 +25,22 @@ RSpec.describe Amount do
 
     it "fails for unrecognized type" do
       all_types = Amount::TYPES.keys.inspect
-      expect{ Amount.new(1, :foo) }.to raise_error("Type foo is not one of #{all_types}")
+      expect{ Amount.new(42, :foo) }.to raise_error("Type foo is not one of #{all_types}")
     end
 
     it "parses number with -" do
-      a = Amount.parse_string("-1")
-      expect_amount(a, 1, :decrement)
+      a = Amount.parse_string("-42")
+      expect_amount(a, 42, :decrement)
     end
 
     it "parses number with no sign" do
-      a = Amount.parse_string("1")
-      expect_amount(a, 1, :absolute)
+      a = Amount.parse_string("42")
+      expect_amount(a, 42, :absolute)
     end
 
     it "parses number with +" do
-      a = Amount.parse_string("+1")
-      expect_amount(a, 1, :increment)
+      a = Amount.parse_string("+42")
+      expect_amount(a, 42, :increment)
     end
 
     it "rejects malformed strings" do
