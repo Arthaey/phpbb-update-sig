@@ -5,7 +5,10 @@ require "yaml"
 module SigUpdater
   class Config
 
-    CONFIG_FILENAME = "update-sig.yml"
+    DEFAULT_CONFIG_FILENAME = "update-sig.yml"
+    ENV_VAR_SITE_KEY     = "PHPBB_UPDATE_SIG_SITE"
+    ENV_VAR_USERNAME_KEY = "PHPBB_UPDATE_SIG_USERNAME"
+    ENV_VAR_PASSWORD_KEY = "PHPBB_UPDATE_SIG_PASSWORD"
     
     attr_reader :site, :username, :password
 
@@ -15,15 +18,15 @@ module SigUpdater
       @password = password
     end
 
-    def self.get_info(env = :test)
-      config_file = get_config_file()
+    def self.get_info(env = :test, config_filename = DEFAULT_CONFIG_FILENAME)
+      config_file = get_config_file(config_filename)
       config = (env.nil? ? config_file : config_file[env])
       cmd_args = get_arguments()
       env_vars = get_env_vars()
 
-      site     = config_file[:site]     || cmd_args[:site]     || env_vars[:site]
-      username = config_file[:username] || cmd_args[:username] || env_vars[:username]
-      password = config_file[:password] || cmd_args[:password] || env_vars[:password]
+      site     = config[:site]     || cmd_args[:site]     || env_vars[:site]
+      username = config[:username] || cmd_args[:username] || env_vars[:username]
+      password = config[:password] || cmd_args[:password] || env_vars[:password]
 
       raise "Site URL is required" if site.nil?
       raise "Username is required" if username.nil?
@@ -31,16 +34,16 @@ module SigUpdater
       if password.nil?
         password = ask("Password for #{username}: ") { |q| q.echo = false }
       end
-      raise "Password required for user '#{username}'" if password.nil?
+      raise "Password required for user '#{username}'" if password.nil? or password.empty?
 
       Config.new(site, username, password)
     end
 
     private
 
-    def self.get_config_file
-      config = YAML.load_file("update-sig.yml") rescue {}
-      config.transform_keys!{ |key| key.to_sym rescue key }
+    def self.get_config_file(config_filename)
+      config = YAML.load_file(config_filename) rescue {}
+      deep_symbolize_keys!(config)
       config
     end
 
@@ -76,21 +79,31 @@ module SigUpdater
 
     def self.get_env_vars
       {
-        :username => ENV["PHPBB_UPDATE_SIG_USERNAME"],
-        :password => ENV["PHPBB_UPDATE_SIG_PASSWORD"],
+        :site     => ENV[ENV_VAR_SITE_KEY],
+        :username => ENV[ENV_VAR_USERNAME_KEY],
+        :password => ENV[ENV_VAR_PASSWORD_KEY],
       }
     end
 
-  end
-end
-
-# File activesupport/lib/active_support/core_ext/hash/keys.rb, line 19
-class Hash
-  def transform_keys!
-    return enum_for(:transform_keys!) unless block_given?
-    keys.each do |key|
-      self[yield(key)] = delete(key)
+    def self.deep_symbolize_keys!(hash)
+      deep_transform_keys!(hash) { |key| key.to_sym rescue key }
     end
-    self
+
+    # From activesupport/lib/active_support/core_ext/hash/keys.rb
+    def self.deep_transform_keys!(object, &block)
+      case object
+      when Hash
+        object.keys.each do |key|
+          value = object.delete(key)
+          object[yield(key)] = deep_transform_keys!(value, &block)
+        end
+        object
+      when Array
+        object.map! {|e| deep_transform_keys!(e, &block) }
+      else
+        object
+      end
+    end
+
   end
 end

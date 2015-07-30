@@ -5,7 +5,7 @@ require_relative "../lib/phpbb"
 # integration tests
 RSpec.describe PhpBB do
   before(:context) do
-    @config = SigUpdater::Config.get_info(true)
+    @config = SigUpdater::Config.get_info(:test)
     @site = @config.site
     @test_user = @config.username
     @test_pass = @config.password

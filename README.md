@@ -5,11 +5,17 @@ of compatibly-configured phpBB forum sites.
 
 # Usage
 
-    sig-updater --username=USERNAME --site=http://www.example.com/phpbb/ \
-        --foo=3 --bar=2/10 --qux=+1 --thing=/+10 --other=-2
+    sig-updater --username=USERNAME --password=PASSWORD \
+        --site=http://www.example.com/phpBB/ \
+        --foo=3 --bar=2/10 --qux=+1 --this=/+10 --that=-2 --other=.1/10
 
-Username and password can also be stored in the environment variables
+Username and password can also be stored in a YAML config file
+(`cp update-sig.yml.example update-sig.yml` and edit it)
+or in the environment variables
 `PHPBB_UPDATE_SIG_USERNAME` and `PHPBB_UPDATE_SIG_PASSWORD`.
+
+Because `<progress>
+Fractional
 
 # Script Requirements
 
