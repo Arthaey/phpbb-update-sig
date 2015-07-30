@@ -1,0 +1,8 @@
+site: "http://www.example.com/phpBB"
+username: "your-username-here"
+password: "your-password-here"
+
+test:
+  site: "http://localhost/phpBB"
+  username: "test-username-here"
+  password: "test-password-here"

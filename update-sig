@@ -1,40 +1,13 @@
 #!/usr/bin/env ruby
-require "highline/import"
-require "optparse"
 require "./bbcode_progress.rb"
+require "./config.rb"
 require "./phpbb.rb"
+include SigUpdater
 
-options = {}
+# Order of precedence: command-line argument, then config file, then env var.
+config = Config.get_info()
 
-option_parser = OptionParser.new do |opts|
-  opts.banner = "USAGE: #{$0} --username=USERNAME --site=URL --label=value[/max] ..."
-
-  opts.on("-s", "--site=URL", "phpBB forum website URL") do |arg|
-    arg.chop! if arg.end_with?("/")
-    options[:site] = arg
-  end
-
-  opts.on("-u", "--username=USERNAME", "phpBB forum username") do |arg|
-    options[:username] = arg
-  end
-end
-
-# Keep any unknown options; these will be the progress items.
-begin
-  option_parser.parse!
-rescue OptionParser::InvalidOption => e
-  e.recover ARGV
-end
-
-username = options[:username] || ENV["PHPBB_UPDATE_SIG_USERNAME"]
-
-raise "Username is required" if username.nil?
-raise "Site URL is required" if options[:site].nil?
-
-password = ENV["PHPBB_UPDATE_SIG_PASSWORD"] || ask("Password for #{username}: ") { |q| q.echo = false }
-raise "Password required for user '#{username}'" if password.nil?
-
-forum = PhpBB.new(options[:site], username, password)
+forum = PhpBB.new(config.site, config.username, config.password)
 old_sig = forum.signature
 new_sig = BBCodeProgress.update(old_sig, ARGV)
 

@@ -1,5 +1,6 @@
 require "spec_helper"
 require "./amount.rb"
+include SigUpdater
 
 RSpec.describe Amount do
   def expect_amount(amount, quantity, type)
