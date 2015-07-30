@@ -1,6 +1,6 @@
-require "spec_helper"
-require "./config.rb"
-require "./phpbb.rb"
+require_relative "spec_helper"
+require_relative "../lib/config"
+require_relative "../lib/phpbb"
 
 # integration tests
 RSpec.describe PhpBB do

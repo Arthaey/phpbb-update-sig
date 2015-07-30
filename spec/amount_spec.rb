@@ -1,5 +1,5 @@
-require "spec_helper"
-require "./amount.rb"
+require_relative "spec_helper"
+require_relative "../lib/amount"
 include SigUpdater
 
 RSpec.describe Amount do

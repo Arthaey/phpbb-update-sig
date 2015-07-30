@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
-require "./bbcode_progress.rb"
-require "./config.rb"
-require "./phpbb.rb"
+require_relative "lib/bbcode_progress"
+require_relative "lib/configb"
+require_relative "lib/phpbb"
 include SigUpdater
 
 # Order of precedence: command-line argument, then config file, then env var.

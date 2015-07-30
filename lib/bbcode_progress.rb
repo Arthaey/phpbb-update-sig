@@ -1,4 +1,4 @@
-require "./amount.rb"
+require_relative "amount"
 
 module SigUpdater
   class BBCodeProgress

@@ -1,5 +1,5 @@
-require "spec_helper"
-require "./bbcode_progress.rb"
+require_relative "spec_helper"
+require_relative "../lib/bbcode_progress"
 
 RSpec.describe BBCodeProgress do
   def expect_progress(p, label, value, max)
