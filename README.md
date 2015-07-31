@@ -5,7 +5,7 @@ of compatibly-configured phpBB forum sites.
 
 # Usage
 
-    sig-updater --username=USERNAME --password=PASSWORD \
+    update-sig --username=USERNAME --password=PASSWORD \
         --site=http://www.example.com/phpBB/ \
         --foo=3 --bar=2/10 --qux=+1 --this=/+10 --that=-2 --other=.1/10
 
