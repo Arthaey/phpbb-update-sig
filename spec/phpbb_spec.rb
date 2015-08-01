@@ -1,6 +1,7 @@
 require_relative "spec_helper"
 require_relative "../lib/config"
 require_relative "../lib/phpbb"
+include SigUpdater
 
 # integration tests
 RSpec.describe PhpBB do
