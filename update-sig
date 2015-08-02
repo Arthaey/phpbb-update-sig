@@ -5,7 +5,8 @@ require_relative "lib/phpbb"
 include SigUpdater
 
 # Order of precedence: command-line argument, then config file, then env var.
-config = SigUpdater::Config.get_info()
+config = SigUpdater::Config.get_info(nil)
+puts "Logging into #{config.site} as user '#{config.username}'..."
 
 forum = PhpBB.new(config.site, config.username, config.password)
 old_sig = forum.signature
