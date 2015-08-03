@@ -1,5 +1,6 @@
 require_relative "spec_helper"
 require_relative "../lib/bbcode_progress"
+include SigUpdater
 
 RSpec.describe BBCodeProgress do
   def expect_progress(p, label, value, max)
@@ -21,6 +22,11 @@ RSpec.describe BBCodeProgress do
     it "sets label, value, and max" do
       p = BBCodeProgress.new("foo", 1, 42)
       expect_progress(p, "foo", 1, 42)
+    end
+
+    it "handles labels with spaces" do
+      p = BBCodeProgress.new("foo bar", 1, 42)
+      expect_progress(p, "foo bar", 1, 42)
     end
 
     it "accepts Amount objects" do
@@ -105,6 +111,12 @@ RSpec.describe BBCodeProgress do
       expect_progress(items["foo"], "foo", 42, 37)
     end
 
+    it "parses label with spaces" do
+      items = BBCodeProgress.parse_args(["foo bar=1/42"])
+      expect(items.length).to eq(1)
+      expect_progress(items["foo bar"], "foo bar", 1, 42)
+    end
+
     it "parses multiple items" do
       items = BBCodeProgress.parse_args(["foo=1/42", "bar=2/37"])
       expect(items.length).to eq(2)
@@ -165,6 +177,13 @@ RSpec.describe BBCodeProgress do
       expect(items.length).to eq(0)
     end
 
+    it "handles labels with spaces" do
+      sig = "[progress=foo bar]1/42[/progress]"
+      items = BBCodeProgress.parse_sig(sig)
+      expect(items.length).to eq(1)
+      expect_progress(items["foo bar"], "foo bar", 1, 42)
+    end
+
     it "parses multiple items" do
       sig = "[progress=foo]1/42[/progress] [progress=bar]2/37[/progress]"
       items = BBCodeProgress.parse_sig(sig)
@@ -211,6 +230,12 @@ RSpec.describe BBCodeProgress do
     it "handles update with fractional value and int max" do
       new_sig = BBCodeProgress.update(@old_sig, ["foo=.3/14"])
       expect(new_sig).to eq("[progress=foo]30/1400[/progress] [progress=bar]2/37[/progress]")
+    end
+
+    it "handles labels with spaces" do
+      old_sig = "[progress=foo bar]1/42[/progress] [progress=bar]2/37[/progress]"
+      new_sig = BBCodeProgress.update(old_sig, ["foo\ bar=3"])
+      expect(new_sig).to eq("[progress=foo bar]3/42[/progress] [progress=bar]2/37[/progress]")
     end
 
     it "preserves leading part of signature" do

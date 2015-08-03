@@ -3,9 +3,9 @@ require_relative "amount"
 module SigUpdater
   class BBCodeProgress
 
-    ARG_REGEX = %r{-{0,2}(\w+)=(#{Amount::NUMBER_REGEX})?/?(#{Amount::NUMBER_REGEX})?}
+    ARG_REGEX = %r{\s*-{0,2}([^=]+?)=(#{Amount::NUMBER_REGEX})?/?(#{Amount::NUMBER_REGEX})?}
 
-    PROGRESS_REGEX = %r{\[progress=(\w+)\](\d+)/(\d+)\[/progress\]}
+    PROGRESS_REGEX = %r{\[progress=([^\]]+?)\](\d+?)/(\d+?)\[/progress\]}
 
     SIG_REGEX = %r{(?:#{PROGRESS_REGEX} *)+}
 
